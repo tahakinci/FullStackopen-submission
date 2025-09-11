@@ -41,7 +41,6 @@ blogRouter.post("/", async (req, res, next) => {
   }
 });
 
-<<<<<<< HEAD
 blogRouter.delete("/", async (req, res, next) => {
   const { id } = req.params;
   await Blog.findOneAndDelete(id);
@@ -67,7 +66,8 @@ blogRouter.put("/", async (req, res, next) => {
     if (error.name === "ValidationError") {
       return res.status(400).json({ error: error.message });
     }
-=======
+  }
+});
 blogRouter.delete("/:id", async (req, res, next) => {
   try {
     const user = req.user;
@@ -76,7 +76,6 @@ blogRouter.delete("/:id", async (req, res, next) => {
     await Blog.findOneAndDelete(req.params.id);
     res.status(201).end();
   } catch (error) {
->>>>>>> 1e784b9 (Exercises 4.15-4.23 complated)
     next(error);
   }
 });
