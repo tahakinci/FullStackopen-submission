@@ -27,11 +27,15 @@ const App = () => {
 
       personService.create(newPerson).then((createdPerson) => {
         setPersons([...persons, createdPerson]);
+        setNotification(
+          {
+            message: `Added '${newName}'`,
+            isSuccess: true
+          })
         setNewName("");
         setNewNumber("");
       });
     } else {
-
       const confirmReplace = window.confirm(
         `${newName} is already added to phonebook, replace the old number with a new one?`
       );
@@ -43,6 +47,11 @@ const App = () => {
           setPersons(
             persons.map((p) => (p.id !== existingPerson.id ? p : returned))
           );
+          setNotification(
+            {
+              message: `Number of ${newName} successfully updated`,
+              isSuccess: true
+            })
           setNewName("");
           setNewNumber("");
         });
@@ -52,13 +61,23 @@ const App = () => {
       setNotification(null)
     }, 5000)
 
-
   };
 
   const handleDelete = (id) => {
     personService.erase(id).then(res => {
       setPersons(persons.filter(person => person.id !== res.id))
     })
+      .catch(() => {
+        const person = persons.find(p => p.id === id)
+        setNotification({
+          message: `Information of ${person.name} has already been removed from server`,
+          isSuccess: false
+        })
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
+        setPersons(persons.filter(p => p.id !== id))
+      })
   }
 
   const filteredPersons = persons.filter((person) =>
