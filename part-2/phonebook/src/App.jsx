@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import Numbers from "./components/Numbers";
-import axios from "axios";
 import PersonForm from "./components/PersonForm";
 import Notification from "./components/Notification";
+import personService from "./services/persons"
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -12,31 +12,54 @@ const App = () => {
   const [notification, setNotification] = useState(null)
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((res) => {
-      setPersons(res.data);
+    personService.getAll().then((res) => {
+      setPersons(res);
     });
   }, []);
 
   const addNewName = (e) => {
     e.preventDefault();
-    if (!persons.find((person) => person.name == newName)) {
-      setPersons([...persons, { name: newName, number: newNumber }]);
-      setNotification({
-        message: `Added ${newName}`,
-        isSuccess: true
-      })
-      setNewName("");
-      setNewNumber("")
+
+    const existingPerson = persons.find((p) => p.name === newName);
+
+    if (!existingPerson) {
+      const newPerson = { name: newName, number: newNumber };
+
+      personService.create(newPerson).then((createdPerson) => {
+        setPersons([...persons, createdPerson]);
+        setNewName("");
+        setNewNumber("");
+      });
     } else {
-      setNotification({
-        message: `${newName} is already added to phonebook`,
-        isSuccess: false
-      })
+
+      const confirmReplace = window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+      );
+
+      if (confirmReplace) {
+        const updatedPerson = { ...existingPerson, number: newNumber };
+
+        personService.update(existingPerson.id, updatedPerson).then((returned) => {
+          setPersons(
+            persons.map((p) => (p.id !== existingPerson.id ? p : returned))
+          );
+          setNewName("");
+          setNewNumber("");
+        });
+      }
     }
     setTimeout(() => {
       setNotification(null)
     }, 5000)
+
+
   };
+
+  const handleDelete = (id) => {
+    personService.erase(id).then(res => {
+      setPersons(persons.filter(person => person.id !== res.id))
+    })
+  }
 
   const filteredPersons = persons.filter((person) =>
     person.name.toLowerCase().includes(filter.toLowerCase())
@@ -59,7 +82,13 @@ const App = () => {
         addNewName={addNewName}
       />
       <h2>Numbers</h2>
-      <Numbers persons={filteredPersons} />
+      <ul>
+        {filteredPersons.map((person, i) => (
+          <li key={`${person.name} - ${i}`}>
+            <Numbers person={person} handleDelete={() => handleDelete(person.id)} />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
