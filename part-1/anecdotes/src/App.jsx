@@ -3,7 +3,7 @@ import { useState } from "react";
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([
     {
-      anecdote: "If it hurts, do it more often.",
+      anecdote: "If it hurts, do it more often",
       vote: 0,
     },
 
