@@ -5,11 +5,16 @@ const Countries = ({ countries }) => {
     return (
         <div>
             {
-                countries.map((country, id) => (
-                    <React.Fragment key={`${country.name.common} - ${id}`}>
-                        <Country country={country} isShown={countries.length == 1} />
-                    </React.Fragment>
-                ))
+                countries.length < 10
+                    ? countries.map((country, i) => (
+                        <React.Fragment key={`${country.name.common}-${i}`}>
+                            <Country
+                                country={country}
+                                isShown={countries.length === 1}
+                            />
+                        </React.Fragment>
+                    ))
+                    : <p>Too many matches, specify another filter</p>
             }
 
         </div>
