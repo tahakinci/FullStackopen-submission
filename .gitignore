@@ -1,0 +1,75 @@
+# ---------------------------
+# Node.js
+# ---------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+logs/**/*.log
+
+# Environment variables
+.env
+.env.*.local
+*.local
+
+# Build output
+dist/
+build/
+.cache/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+*.lcov
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Optional npm caches
+.npm/
+.eslintcache
+
+# TypeScript
+*.tsbuildinfo
+
+# Vite
+.vite/
+vite.config.ts.timestamp*
+vite.config.js.timestamp*
+
+# Linting / Formatting
+.prettier-cache/
+
+# Temporary files
+tmp/
+temp/
+
+# Local development
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Git merge leftovers
+*.orig
+
+# Testing
+jest-cache/
+jest-output/
+
+# Optional: if using Docker
+docker-data/
