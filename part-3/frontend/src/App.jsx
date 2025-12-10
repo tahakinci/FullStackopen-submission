@@ -65,7 +65,7 @@ const App = () => {
 
   const handleDelete = (id) => {
     personService.erase(id).then(res => {
-      setPersons(persons.filter(person => person.id !== res.id))
+      setPersons(persons.filter(person => person.id !== id))
     })
       .catch(() => {
         const person = persons.find(p => p.id === id)

@@ -7,6 +7,7 @@ const getAll = () => {
 }
 
 const create = newObj => {
+    console.log(newObj)
     const req = axios.post(baseUrl, newObj)
     return req.then(res => res.data)
 }
@@ -18,7 +19,12 @@ const update = (id, newObj) => {
 
 const erase = (id) => {
     const req = axios.delete(`${baseUrl}/${id}`)
-    return req.then(res => res.data)
+    return req.then(res => {
+        console.log(res)
+        return (
+            res.data
+        )
+    })
 }
 
 export default { getAll, create, update, erase }
