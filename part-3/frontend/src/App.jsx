@@ -23,6 +23,7 @@ const App = () => {
     const existingPerson = persons.find((p) => p.name === newName);
 
     if (!existingPerson) {
+      console.log("here")
       const newPerson = { name: newName, number: newNumber };
 
       personService.create(newPerson).then((createdPerson) => {
@@ -34,7 +35,12 @@ const App = () => {
           })
         setNewName("");
         setNewNumber("");
-      });
+      })
+        .catch(error => {
+          setNotification({
+            message: error.response.data.error
+          })
+        })
     } else {
       const confirmReplace = window.confirm(
         `${newName} is already added to phonebook, replace the old number with a new one?`
