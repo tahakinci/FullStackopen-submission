@@ -6,16 +6,14 @@ blogsRouter.get('/', async (req, res) => {
     res.json(blogs)
 })
 
-blogsRouter.get("/:id", (req, res) => {
-    Blog.findById(req.params.id)
-        .then(blog => {
-            if (blog) {
-                res.json(blog)
-            } else {
-                res.status(404).end()
-            }
-        })
-        .catch(error => next(error))
+blogsRouter.get("/:id", async (req, res) => {
+    const blog = await Blog.findById(req.params.id)
+
+    if (blog) {
+        res.json(blog)
+    } else {
+        res.status(404).end()
+    }
 })
 
 blogsRouter.post("/", async (req, res, next) => {
@@ -32,32 +30,27 @@ blogsRouter.post("/", async (req, res, next) => {
     res.status(201).json(savedBlog)
 })
 
-blogsRouter.delete("/:id", (req, res, next) => {
-    Blog.findByIdAndDelete(req.params.id)
-        .then(() => {
-            res.status(204).end()
-        })
-        .catch(error => next(error))
+blogsRouter.delete("/:id", async (req, res, next) => {
+    await Blog.findByIdAndDelete(req.params.id)
+    res.status(204).end()
 })
 
-blogsRouter.put("/:id", (req, res, next) => {
+blogsRouter.put("/:id", async (req, res, next) => {
     const { title, author, url, likes } = req.body
 
-    Blog.findById(req.params.id)
-        .then(blog => {
-            if (!blog) {
-                return res.status(404).end()
-            }
-            blog.title = title
-            blog.author = author
-            blog.url = url
-            blog.likes = likes
+    const blog = await Blog.findById(req.params.id)
 
-            return blog.save().then(updatedBlog => {
-                res.json(updatedBlog)
-            })
-        })
-        .catch(error => next(error))
+    if (!blog) {
+        return res.status(404).end()
+    }
+
+    blog.title = title
+    blog.author = author
+    blog.url = url
+    blog.likes = likes
+
+    const updatedBlog = await blog.save()
+    res.json(updatedBlog)
 })
 
 module.exports = blogsRouter
