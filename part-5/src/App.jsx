@@ -3,15 +3,15 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import Notification from "./components/Notification";
+import BlogForm from "./components/BlogForm";
+import LoginForm from "./components/LoginForm";
+import Togglable from "./components/Togglable";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
   const [notification, setNotification] = useState(null);
 
   useEffect(() => {
@@ -62,14 +62,10 @@ const App = () => {
     window.localStorage.removeItem("bloglistLoggedInUser");
   };
 
-  const handleNewBlog = async (e) => {
-    e.preventDefault();
+  const handleNewBlog = async (blogObj) => {
     try {
-      const newBlog = await blogService.create({ title, author, url });
+      const newBlog = await blogService.create(blogObj);
       setBlogs([...blogs, newBlog]);
-      setTitle("");
-      setAuthor("");
-      setUrl("");
       setNotification({
         message: `a new blog ${newBlog.title} by ${newBlog.author} added`,
         type: "success",
@@ -89,49 +85,48 @@ const App = () => {
     }
   };
 
-  const blogForm = () => (
-    <div>
-      <h2>blogs</h2>
-      {user.name} logged in <button onClick={handleLogout}>logout</button>
-      <h2>create new</h2>
-      <form onSubmit={handleNewBlog}>
-        <div>
-          title
-          <input value={title} onChange={(e) => setTitle(e.target.value)} />
-        </div>
-        <div>
-          author
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} />
-        </div>
-        <div>
-          url
-          <input value={url} onChange={(e) => setUrl(e.target.value)} />
-        </div>
-        <button type="submit">create</button>
-      </form>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
-    </div>
-  );
+  const handleLike = async (id) => {
+    const blog = blogs.find(blog => blog.id === id)
+    const updatedBlog = await blogService.update(id, { ...blog, likes: blog.likes + 1 })
+    setBlogs(blogs.map(blog => blog.id === id ? updatedBlog : blog))
+  }
 
-  const loginForm = () => (
-    <div>
-      <h2>log in to application</h2>
-      <form onSubmit={(e) => handleLogin(e)}>
-        username
-        <input value={username} onChange={(e) => setUsername(e.target.value)} />
-        password
-        <input value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button type="submit">login</button>
-      </form>
-    </div>
-  );
+  const handleRemoveBlog = async (id) => {
+    const blog = blogs.find(blog => blog.id === id)
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      await blogService.erase(id)
+      setBlogs(blogs.filter(blog => blog.id !== id))
+    }
+  }
 
   return (
     <>
       <Notification notification={notification} />
-      {user ? blogForm() : loginForm()}
+      {
+        user
+          ? (
+            <div>
+              <h2>blogs</h2>
+              {user.name} logged in <button onClick={handleLogout}>logout</button>
+              <h2>create new</h2>
+              <Togglable buttonLabel="create new blog">
+                <BlogForm createBlog={handleNewBlog} />
+              </Togglable>
+              {[...blogs]
+                .sort((a, b) => b.likes - a.likes)
+                .map((blog) => (
+                  <Blog key={blog.id} blog={blog} handleLike={handleLike} handleRemoveBlog={handleRemoveBlog} />
+                ))
+              }
+            </div>
+          )
+          : (
+            <div>
+              <h2>log in to application</h2>
+              <LoginForm username={username} password={password} setUsername={setUsername} setPassword={setPassword} handleLogin={handleLogin} />
+            </div>
+          )
+      }
     </>
   );
 };
