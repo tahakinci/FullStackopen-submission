@@ -15,6 +15,7 @@ const BirthYearForm = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
+        console.log(name)
         editAuthor({ variables: { name, born: Number(birthYear) } })
 
         setName("")
@@ -26,15 +27,13 @@ const BirthYearForm = () => {
             <div>
                 name:
                 <select disabled={loading} value={name} onChange={({ target }) => setName(target.value)}>
+                    <option value="" disabled>Select author</option>
                     {
-                        loading ? (
-                            <option value="loading...">loading...</option>
-                        ) : (
-                            authors.map(author => (
-                                <option value={author.name} key={`authorOption-${author.id}`}>{author.name}</option>
-                            ))
-                        )
+                        authors.map(author => (
+                            <option value={author.name} key={`authorOption-${author.id}`}>{author.name}</option>
+                        ))
                     }
+
                 </select>
             </div>
             <div>
