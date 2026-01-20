@@ -119,7 +119,7 @@ const resolvers = {
         },
         login: async (root, args) => {
             try {
-                const user = User.findOne({ username: args.username })
+                const user = await User.findOne({ username: args.username })
 
                 if (!user || args.password !== "secret") {
                     throw new GraphQLError("Wrong credentials", {
@@ -131,7 +131,7 @@ const resolvers = {
 
                 const userForToken = {
                     username: user.username,
-                    id: user._id
+                    id: user._id,
                 }
 
                 return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
