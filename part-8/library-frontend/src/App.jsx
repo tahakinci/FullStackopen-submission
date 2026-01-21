@@ -6,13 +6,23 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import Login from './components/Login'
 import { useEffect } from 'react'
-import { useApolloClient } from '@apollo/client/react'
+import { useApolloClient, useSubscription, } from '@apollo/client/react'
 import Recommendations from './components/Recommendations'
+import { BOOK_ADDED } from './queries'
+import { addBookToCache } from './utils/apolloCache'
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("library-user-token"))
   const navigate = useNavigate()
   const client = useApolloClient()
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const addedBook = data.data.bookAdded
+      window.alert(`New book "${addedBook.title}" added`)
+      addBookToCache(client.cache, addedBook)
+    },
+  })
 
   useEffect(() => {
     if (token) {

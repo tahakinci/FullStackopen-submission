@@ -1,5 +1,7 @@
 const typeDefs = /* GraphQL */`
-
+        type Subscription {
+        bookAdded: Book!
+    }
     type Author {
         name: String!
         id: ID!
@@ -55,6 +57,7 @@ const typeDefs = /* GraphQL */`
             password: String!
         ): Token
     }
+
 `
 
 module.exports = typeDefs

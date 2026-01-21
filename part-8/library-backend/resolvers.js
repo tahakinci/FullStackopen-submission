@@ -2,7 +2,10 @@ const Book = require("./models/book")
 const Author = require("./models/author");
 const User = require("./models/user")
 const { GraphQLError } = require("graphql")
+const { PubSub } = require('graphql-subscriptions')
 const jwt = require("jsonwebtoken")
+
+const pubsub = new PubSub()
 
 const resolvers = {
     Query: {
@@ -10,6 +13,7 @@ const resolvers = {
         authorCount: async () => Author.collection.countDocuments(),
         allBooks: async (root, args) => {
             let filteredBooks = await Book.find({}).populate("author")
+            console.log("Book.find")
 
             if (args.author) {
                 filteredBooks = filteredBooks.filter(book => book.author === args.author)
@@ -22,6 +26,7 @@ const resolvers = {
         },
         allAuthors: async () => {
             const authors = await Author.find({})
+            console.log("Author.Find")
             return authors
         },
         me: (root, args, context) => {
@@ -31,6 +36,7 @@ const resolvers = {
     Author: {
         bookCount: async ({ name }) => {
             const author = await Author.findOne({ name })
+
 
             if (!author) {
                 return 0
@@ -78,6 +84,7 @@ const resolvers = {
             }
 
             const book = new Book({ ...args, author: hasAuthor._id })
+            pubsub.publish("BOOK_ADDED", { bookAdded: book })
             return book.save()
 
         },
@@ -144,7 +151,12 @@ const resolvers = {
                 })
             }
         }
-    }
+    },
+    Subscription: {
+        bookAdded: {
+            subscribe: () => pubsub.asyncIterableIterator('BOOK_ADDED')
+        },
+    },
 }
 
 module.exports = resolvers
