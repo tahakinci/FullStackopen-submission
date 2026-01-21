@@ -1,22 +1,22 @@
-type BMIResult = "Underweight" | "Normal" | "Overweight" | "Obesity"
+type BMIResult = "Underweight" | "Normal" | "Overweight" | "Obesity";
 
 const calculateBmi = (heightCm: number, weightKg: number): BMIResult => {
-    const heightM = heightCm / 100
-    const bmi = weightKg / (heightM * heightM)
+    const heightM = heightCm / 100;
+    const bmi = weightKg / (heightM * heightM);
 
     if (bmi < 18.5) {
-        return "Underweight"
+        return "Underweight";
     }
 
     if (bmi < 25) {
-        return "Normal"
+        return "Normal";
     }
 
     if (bmi < 30) {
-        return "Overweight"
+        return "Overweight";
     }
 
-    return "Obesity"
-}
+    return "Obesity";
+};
 
-console.log(calculateBmi(180, 74)) 
+console.log(calculateBmi(180, 74)); 
