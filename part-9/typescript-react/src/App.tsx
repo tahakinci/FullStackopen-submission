@@ -25,7 +25,7 @@ interface CoursePartBackground extends DescriptCoursePart {
   kind: "background"
 }
 
-type CoursePart = CoursePartBasic | CoursePartGroup | CoursePartBackground;
+export type CoursePart = CoursePartBasic | CoursePartGroup | CoursePartBackground;
 
 const courseParts: CoursePart[] = [
   {
