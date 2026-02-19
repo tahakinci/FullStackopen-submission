@@ -34,6 +34,9 @@ const DiaryForm = ({ setNotification }: PropTypes) => {
             if (axios.isAxiosError(error)) {
                 console.log(error.response)
                 setNotification(error.response?.data)
+                setTimeout(() => {
+                    setNotification("")
+                }, 3000)
             }
             else {
                 console.log(error)
